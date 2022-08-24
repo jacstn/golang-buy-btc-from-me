@@ -6,3 +6,5 @@ github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfC
 github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
 github.com/justinas/nosurf v1.1.1 h1:92Aw44hjSK4MxJeMSyDa7jwuI9GR2J/JCQiaKvXXSlk=
 github.com/justinas/nosurf v1.1.1/go.mod h1:ALpWdSbuNGy2lZWtyXdjkYv4edL23oSEgfBT1gPJ5BQ=
+github.com/omise/omise-go v1.0.8 h1:xn7vVFyzvmh0QJ7WS8149zgx1xOcftvH81GEuEXfJ2Y=
+github.com/omise/omise-go v1.0.8/go.mod h1:zAupNC0wZf+QJ/yz+d39z4g8k4UEeFZP7GhiZZTq5XY=
