@@ -17,10 +17,10 @@ func New(data url.Values) *Form {
 	}
 }
 
-func (f *Form) ValidUrl(field string, r *http.Request) bool {
+func (f *Form) ValidAddress(field string, r *http.Request) bool {
 	_, err := url.ParseRequestURI(r.Form.Get(field))
 	if err != nil {
-		f.Errors.Add(field, "This URL is invalid")
+		f.Errors.Add(field, "Bitcoin Address is invalid")
 		return false
 	}
 

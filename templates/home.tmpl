@@ -1,36 +1,26 @@
 {{template "base" .}}
 
 {{define "content"}}
+  <h3><img width="70px" src="/static/images/urllogo.png">Enter Bitcoin Address</h3>
+  <form method="post" action="#">
+    <div class="row mt-3">
+      <div class="form-group">
+        
+        {{$orderModel := index .Data "order_model"}}
+        {{with .Form.Errors.Get "btc_addr"}}
+          <label class="text-danger"> {{.}}</label>
+        {{end}}
+        <input type="text" value="{{$orderModel.Name }}" class="form-control {{with .Form.Errors.Get "btc_addr"}}is-invalid{{end}}" id="btc_addr" name="btc_addr" aria-describedby="btc_addr" placeholder="Enter Bitcoin Address">
+        <input type="hidden" name="csrf_token" value="{{index .Data "csrf_token"}}"/>
+        <div id="addressHelp" class="form-text">Bitcoin Address we will send bought amount to.</div>
 
-<div class="row">
-    <div class="col">
-        <h3>Welcome Buy BTC From Me Page</h3>
+      </div>
     </div>
-</div>
-<div class="row">
-  <table class="table">
-    <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">URL</th>
-                <th scope="col">Created</th>
-              </tr>
-    </thead>
-    <tbody>
-      {{range index .Data "list_of_urls"}}
-              <tr>
-                <th scope="row">{{.Id}}</th>
-                <td>{{ .Name}}</td>
-                <td>{{ .CreatedAt}}</td>
-              </tr>
-              {{end}}
-    </tbody>
-  </table>
-</div>
+    <div class="row mt-3">
+      <div class="col">
+        <input type="submit" value="Pay" class="btn btn-primary"/>
+      </div>
+    </div>
+  </form>
 
-<div class="row">
-    <div class="col">
-      <a href="/new-url" class="btn btn-primary">Pay</a>
-    </div>
-</div>
-{{end}}
+  {{end}}
