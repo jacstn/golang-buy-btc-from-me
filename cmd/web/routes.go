@@ -15,7 +15,7 @@ func routes() *chi.Mux {
 	mux.Use(LoadSession)
 	mux.Use(NoSurf)
 	mux.Get("/", handlers.Home)
-	mux.Get("/get-omise-public-key", handlers.GetOmisePublicKey)
+	mux.Post("/create-order", handlers.CreateOrder)
 	fileServer := http.FileServer(http.Dir("./static"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 

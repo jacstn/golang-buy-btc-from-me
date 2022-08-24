@@ -1,8 +1,10 @@
 {{template "base" .}}
 
 {{define "content"}}
-  <h3><img width="70px" src="/static/images/urllogo.png">Enter Bitcoin Address</h3>
-  <form method="post" action="#">
+  <script type="text/javascript" src="https://cdn.omise.co/omise.js"></script>
+
+  <h3><img width="70px" src="/static/img/btc.png">Buy BTC From Me</h3>
+  <form method="post" id="buy-btc-form" action="/create-order">
     <div class="row mt-3">
       <div class="form-group">
         
@@ -10,7 +12,15 @@
         {{with .Form.Errors.Get "btc_addr"}}
           <label class="text-danger"> {{.}}</label>
         {{end}}
-        <input type="text" value="{{$orderModel.Name }}" class="form-control {{with .Form.Errors.Get "btc_addr"}}is-invalid{{end}}" id="btc_addr" name="btc_addr" aria-describedby="btc_addr" placeholder="Enter Bitcoin Address">
+        <div class="mb-3">
+          <input type="text" value="{{$orderModel.Address }}" class="form-control {{with .Form.Errors.Get "btc_addr"}}is-invalid{{end}}" id="btc_addr" name="btc_addr" aria-describedby="btc_addr" placeholder="Enter Bitcoin Address">
+        </div>
+        <div class="mb-3">
+          <input type="text" value="{{$orderModel.Amount }}" class="form-control {{with .Form.Errors.Get "amount"}}is-invalid{{end}}" id="amount" name="amount" aria-describedby="amount" placeholder="Enter Amount">
+        </div>
+        <div class="mb-3">
+
+        </div>
         <input type="hidden" name="csrf_token" value="{{index .Data "csrf_token"}}"/>
         <div id="addressHelp" class="form-text">Bitcoin Address we will send bought amount to.</div>
 
@@ -18,9 +28,53 @@
     </div>
     <div class="row mt-3">
       <div class="col">
-        <input type="submit" value="Pay" class="btn btn-primary"/>
+        <input type="submit" value="Pay" id="pay-button" class="btn btn-primary"/>
       </div>
     </div>
   </form>
 
+  <script type="text/javascript">
+    function omisePaymentForm(omiseAmount) {
+    const { OmiseCard } = window
+
+    OmiseCard.configure({
+      publicKey: {{index .Data "omise_key"}},
+      amount: omiseAmount,
+    })
+
+    OmiseCard.open({
+      amount: omiseAmount,
+      currency: "USD",
+      defaultPaymentMethod: "credit_card",
+      onCreateTokenSuccess: (nonce) => {
+        console.log("token created succesfully")
+        $("#pay-button").attr("disabled", false);
+      },
+      onFormClosed: () => {
+        $("#pay-button").attr("disabled", false);
+      }
+    })
+  };
+    // ---------------------------------------------------
+    $("#buy-btc-form").submit(function(e) {
+      $("#pay-button").attr("disabled", true);
+      e.preventDefault();
+  
+      var form = $(this);
+      const actionUrl = form.attr('action');
+      const omiseAmount = form.attr('amount');
+      
+      $.ajax({
+          type: "POST",
+          url: actionUrl,
+          data: form.serialize(), // serializes the form's elements.
+          success: function(data)
+          {
+            omisePaymentForm(omiseAmount)
+          }
+      });
+      
+  });
+
+  </script>
   {{end}}

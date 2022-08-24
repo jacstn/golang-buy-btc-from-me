@@ -8,6 +8,7 @@ import (
 	"github.com/jacstn/golang-buy-btc-from-me/config"
 	"github.com/jacstn/golang-buy-btc-from-me/internal/forms"
 	"github.com/jacstn/golang-buy-btc-from-me/internal/models"
+	"github.com/justinas/nosurf"
 )
 
 var app *config.AppConfig
@@ -16,14 +17,14 @@ func NewHandlers(c *config.AppConfig) {
 	app = c
 }
 
-func GetOmisePublicKey(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	retVal := fmt.Sprintf("{\"OmisePKey\":\"%s\"}", app.OmisePublicKey)
-	fmt.Fprint(w, retVal)
+func CreateOrder(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "{\"status\":\"ok\"}")
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
+	data["omise_key"] = app.OmisePublicKey
+	data["csrf_token"] = nosurf.Token(r)
 
 	renderTemplate(w, "home", &models.TemplateData{
 		Form: forms.New(nil),
