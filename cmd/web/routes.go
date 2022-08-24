@@ -12,7 +12,6 @@ func routes() *chi.Mux {
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Recoverer)
-	//mux.Use(WriteToConsole)
 	mux.Use(LoadSession)
 	mux.Use(NoSurf)
 	mux.Get("/", handlers.Home)

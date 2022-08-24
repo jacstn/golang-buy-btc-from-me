@@ -17,20 +17,22 @@ func NewHandlers(c *config.AppConfig) {
 }
 
 func GetOmisePublicKey(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Content-Type", "application/json")
+	retVal := fmt.Sprintf("{\"OmisePKey\":\"%s\"}", app.OmisePublicKey)
+	fmt.Fprint(w, retVal)
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 
-	renderTemplate(w, "new-url", &models.TemplateData{
+	renderTemplate(w, "home", &models.TemplateData{
 		Form: forms.New(nil),
 		Data: data,
 	})
 }
 
 func renderTemplate(w http.ResponseWriter, templateName string, data *models.TemplateData) {
-	parsedTemplate, _ := template.ParseFiles("./templates/"+templateName+".go.tmpl", "./templates/base.layout.go.tmpl")
+	parsedTemplate, _ := template.ParseFiles("./templates/"+templateName+".tmpl", "./templates/base.layout.tmpl")
 
 	err := parsedTemplate.Execute(w, data)
 	if err != nil {
