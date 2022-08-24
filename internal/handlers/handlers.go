@@ -23,7 +23,8 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetBTCPrice(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "{\"btc_price\":%s}", helpers.GetBTCPrice())
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "{\"btc_price\":%s, \"sell_margin\":%.2f}", helpers.GetBTCPrice(), app.SellMargin)
 }
 
 func UpdateOrderStatus(w http.ResponseWriter, r *http.Request) {

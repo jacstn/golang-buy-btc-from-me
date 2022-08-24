@@ -12,17 +12,23 @@
         {{with .Form.Errors.Get "btc_addr"}}
           <label class="text-danger"> {{.}}</label>
         {{end}}
-        <div class="mb-3">
+        <div class="mt-3">
           <input type="text" value="{{$orderModel.Address }}" class="form-control {{with .Form.Errors.Get "btc_addr"}}is-invalid{{end}}" id="btc_addr" name="btc_addr" aria-describedby="btc_addr" placeholder="Enter Bitcoin Address">
         </div>
-        <div class="mb-3">
-          <input type="text" value="{{$orderModel.Amount }}" class="form-control {{with .Form.Errors.Get "amount"}}is-invalid{{end}}" id="amount" name="amount" aria-describedby="amount" placeholder="Enter Amount">
+        <div id="addressHelp" class="form-text">Bitcoin Address we will send bought Bitcoin to.</div>
+        <div class="mt-3">
+          <input type="text" value="{{$orderModel.Amount }}" class="form-control {{with .Form.Errors.Get "amount"}}is-invalid{{end}}" id="btcamount" name="amount" aria-describedby="amount" placeholder="Enter Amount">
         </div>
-        <div class="mb-3">
+        <div id="btcprice-hint" class="form-text">Price Per 1 BTC</div>
+        <div class="mt-3">
+          <input type="text" class="form-control" id="to-pay" name="to-pay" aria-describedby="to-pay" placeholder="To Pay" disabled>
+        </div>
+        <div id="addressHelp" class="form-text">amount to pay in USD</div>
+
+        <div class="mt-3">
 
         </div>
         <input type="hidden" name="csrf_token" value="{{index .Data "csrf_token"}}"/>
-        <div id="addressHelp" class="form-text">Bitcoin Address we will send bought amount to.</div>
 
       </div>
     </div>
@@ -34,6 +40,8 @@
   </form>
 
   <script type="text/javascript">
+    var BTCPRICE = undefined;
+
     function omisePaymentForm(omiseAmount) {
     const { OmiseCard } = window
 
@@ -73,8 +81,24 @@
             omisePaymentForm(omiseAmount)
           }
       });
-      
   });
 
+  $(document).ready(function(){
+    $.ajax({ url: "/get-btc-price",
+        context: document.body,
+        success: function(done){
+          console.log(done)
+          BTCPRICE = parseFloat(done.btc_price) * (1 + done.sell_margin);
+
+          var str = "Price per 1 BTC = " + BTCPRICE;
+          $('#btcprice-hint').html(str);
+        }
+    });
+  });
+  $( "#btcamount").keyup(function() {
+    const amountToBuy = $("#btcamount").val();
+    console.log(amountToBuy)
+    $("#to-pay").val(BTCPRICE * parseFloat(amountToBuy));
+  });
   </script>
   {{end}}

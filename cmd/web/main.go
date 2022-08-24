@@ -40,6 +40,7 @@ var app = config.AppConfig{
 	Production:      false,
 	OmisePublicKey:  os.Getenv("OMISE_PKEY"),
 	OmisePrivateKey: os.Getenv("OMISE_SKEY"),
+	SellMargin:      0.3, // 30%
 }
 
 func run() error {

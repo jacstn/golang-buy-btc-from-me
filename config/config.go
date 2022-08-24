@@ -15,4 +15,5 @@ type AppConfig struct {
 	DB              *sql.DB
 	OmisePublicKey  string
 	OmisePrivateKey string
+	SellMargin      float32
 }
