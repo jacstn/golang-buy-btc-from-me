@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
@@ -36,7 +37,9 @@ func main() {
 const portNumber = ":3000"
 
 var app = config.AppConfig{
-	Production: false,
+	Production:      false,
+	OmisePublicKey:  os.Getenv("OMISE_PKEY"),
+	OmisePrivateKey: os.Getenv("OMISE_SKEY"),
 }
 
 func run() error {

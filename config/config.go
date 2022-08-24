@@ -8,9 +8,11 @@ import (
 )
 
 type AppConfig struct {
-	UseCache   bool
-	InfoLog    *log.Logger
-	Production bool
-	Session    *scs.SessionManager
-	DB         *sql.DB
+	UseCache        bool
+	InfoLog         *log.Logger
+	Production      bool
+	Session         *scs.SessionManager
+	DB              *sql.DB
+	OmisePublicKey  string
+	OmisePrivateKey string
 }

@@ -16,6 +16,10 @@ func NewHandlers(c *config.AppConfig) {
 	app = c
 }
 
+func GetOmisePublicKey(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func Home(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 
