@@ -8,7 +8,7 @@ import (
 )
 
 func Connect() *sql.DB {
-	db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/urldb")
+	db, err := sql.Open("mysql", "root:@tcp(127.0.0.1:3306)/buy_btc")
 	if err != nil {
 		panic(err.Error())
 	}
