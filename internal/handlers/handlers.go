@@ -7,6 +7,7 @@ import (
 
 	"github.com/jacstn/golang-buy-btc-from-me/config"
 	"github.com/jacstn/golang-buy-btc-from-me/internal/forms"
+	"github.com/jacstn/golang-buy-btc-from-me/internal/helpers"
 	"github.com/jacstn/golang-buy-btc-from-me/internal/models"
 	"github.com/justinas/nosurf"
 )
@@ -18,6 +19,14 @@ func NewHandlers(c *config.AppConfig) {
 }
 
 func CreateOrder(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "{\"status\":\"ok\"}")
+}
+
+func GetBTCPrice(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "{\"btc_price\":%s}", helpers.GetBTCPrice())
+}
+
+func UpdateOrderStatus(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "{\"status\":\"ok\"}")
 }
 
