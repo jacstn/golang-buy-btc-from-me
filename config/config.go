@@ -16,4 +16,5 @@ type AppConfig struct {
 	OmisePublicKey  string
 	OmisePrivateKey string
 	SellMargin      float32
+	BTCDecimals     uint64
 }

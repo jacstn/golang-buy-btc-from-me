@@ -3,6 +3,9 @@ package forms
 import (
 	"net/http"
 	"net/url"
+	"strconv"
+
+	"github.com/jacstn/golang-buy-btc-from-me/internal/ext"
 )
 
 type Form struct {
@@ -18,8 +21,7 @@ func New(data url.Values) *Form {
 }
 
 func (f *Form) ValidAddress(field string, r *http.Request) bool {
-	_, err := url.ParseRequestURI(r.Form.Get(field))
-	if err != nil {
+	if ext.IsValidBTCAddress(r.Form.Get(field)) != true {
 		f.Errors.Add(field, "Bitcoin Address is invalid")
 		return false
 	}
@@ -33,6 +35,15 @@ func (f *Form) Has(field string, r *http.Request) bool {
 		return false
 	}
 
+	return true
+}
+
+func (f *Form) ValidAmunt(field string, r *http.Request) bool {
+	amount := r.Form.Get(field)
+	if _, err := strconv.ParseFloat(amount, 64); err != nil {
+		f.Errors.Add(field, "Not a valid amount")
+		return false
+	}
 	return true
 }
 

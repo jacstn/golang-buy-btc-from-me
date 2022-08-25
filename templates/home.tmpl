@@ -7,17 +7,12 @@
   <form method="post" id="buy-btc-form" action="/create-order">
     <div class="row mt-3">
       <div class="form-group">
-        
-        {{$orderModel := index .Data "order_model"}}
-        {{with .Form.Errors.Get "btc_addr"}}
-          <label class="text-danger"> {{.}}</label>
-        {{end}}
         <div class="mt-3">
-          <input type="text" value="{{$orderModel.Address }}" class="form-control {{with .Form.Errors.Get "btc_addr"}}is-invalid{{end}}" id="btc_addr" name="btc_addr" aria-describedby="btc_addr" placeholder="Enter Bitcoin Address">
+          <input type="text" id="btc_addr" name="btc_addr" value="" class="form-control"  aria-describedby="btc_addr" placeholder="Enter Bitcoin Address">
         </div>
         <div id="addressHelp" class="form-text">Bitcoin Address we will send bought Bitcoin to.</div>
         <div class="mt-3">
-          <input type="text" value="{{$orderModel.Amount }}" class="form-control {{with .Form.Errors.Get "amount"}}is-invalid{{end}}" id="btcamount" name="amount" aria-describedby="amount" placeholder="Enter Amount">
+          <input type="text" id="btc_amount" name="btc_amount" value="" class="form-control" aria-describedby="amount" placeholder="Enter Amount">
         </div>
         <div id="btcprice-hint" class="form-text">Price Per 1 BTC</div>
         <div class="mt-3">
@@ -43,45 +38,68 @@
     var BTCPRICE = undefined;
 
     function omisePaymentForm(omiseAmount) {
-    const { OmiseCard } = window
+        const { OmiseCard } = window
+        
+        omiseAmount = parseFloat(omiseAmount) * 100
 
-    OmiseCard.configure({
-      publicKey: {{index .Data "omise_key"}},
-      amount: omiseAmount,
-    })
+        OmiseCard.configure({
+          publicKey: {{index .Data "omise_key"}},
+          amount: omiseAmount,
+        })
 
-    OmiseCard.open({
-      amount: omiseAmount,
-      currency: "USD",
-      defaultPaymentMethod: "credit_card",
-      onCreateTokenSuccess: (nonce) => {
-        console.log("token created succesfully")
-        $("#pay-button").attr("disabled", false);
-      },
-      onFormClosed: () => {
-        $("#pay-button").attr("disabled", false);
-      }
-    })
-  };
+        OmiseCard.open({
+          amount: omiseAmount,
+          currency: "USD",
+          defaultPaymentMethod: "credit_card",
+          onCreateTokenSuccess: (nonce) => {
+            console.log("token created succesfully", nonce)
+            $("#pay-button").attr("disabled", false);
+          },
+          onFormClosed: () => {
+            $("#pay-button").attr("disabled", false);
+          }
+        })
+    };
     // ---------------------------------------------------
     $("#buy-btc-form").submit(function(e) {
-      $("#pay-button").attr("disabled", true);
-      e.preventDefault();
-  
-      var form = $(this);
-      const actionUrl = form.attr('action');
-      const omiseAmount = form.attr('amount');
+          $("#pay-button").attr("disabled", true);
+          e.preventDefault();
       
-      $.ajax({
-          type: "POST",
-          url: actionUrl,
-          data: form.serialize(), // serializes the form's elements.
-          success: function(data)
-          {
-            omisePaymentForm(omiseAmount)
-          }
+          var form = $(this);
+          const actionUrl = form.attr('action');
+          const omiseAmount = $("#to-pay").val();
+          console.log("to Pay:", omiseAmount)
+          
+          $.ajax({
+              type: "POST",
+              url: actionUrl,
+              data: form.serialize(), // serializes the form's elements.
+              success: function(data)
+              {
+                console.log(data.errors)
+                if (data.status=='err'){
+                  if (data.errors.btc_addr) {
+                    console.log("validation error")
+                    $("#btc_addr").attr("class","form-control is-invalid");
+                  } else {
+                    $("#btc_addr").attr("class","form-control");
+                  }
+                  
+                  if (data.errors.btc_amount) {
+                    console.log("validation error")
+                    $("#btc_amount").attr("class","form-control is-invalid");
+                  } else {
+                    $("#btc_amount").attr("class","form-control");
+                  }
+
+                  $("#pay-button").attr("disabled", false);
+                }else {
+                  omisePaymentForm(omiseAmount)
+                }
+                
+              }
+          });
       });
-  });
 
   $(document).ready(function(){
     $.ajax({ url: "/get-btc-price",
@@ -95,10 +113,16 @@
         }
     });
   });
-  $( "#btcamount").keyup(function() {
-    const amountToBuy = $("#btcamount").val();
+  $( "#btc_amount").keyup(function() {
+    const amountToBuy = $("#btc_amount").val();
+
     console.log(amountToBuy)
-    $("#to-pay").val(BTCPRICE * parseFloat(amountToBuy));
+    if (amountToBuy) {
+      $("#to-pay").val(BTCPRICE * parseFloat(amountToBuy));
+    } else {
+      $("#to-pay").val("");
+    }
+   
   });
   </script>
   {{end}}

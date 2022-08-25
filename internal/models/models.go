@@ -18,8 +18,8 @@ type Order struct {
 }
 
 func NewOrder(db *sql.DB, o *Order) error {
-	_, err := db.Exec("INSERT into domain (btcAmount, usdAmount, address, blockchainTransactionId, status, createdAt, updatedAt) values (?, ?, ?, ?, ?, ?, ?)",
-		o.BTCAmount, o.USDAmount, o.Address, o.BlockchainTransactionID, o.Status, time.Now(), time.Now())
+	_, err := db.Exec("INSERT into order (btcAmount, usdAmount, address, blockchainTransactionId, status, createdAt, updatedAt) values (?, ?, ?, ?, ?, 'NEW', ?, ?)",
+		o.BTCAmount, o.USDAmount, o.Address, o.BlockchainTransactionID, time.Now(), time.Now())
 
 	if err != nil {
 		fmt.Println("error while inserting into database", err)

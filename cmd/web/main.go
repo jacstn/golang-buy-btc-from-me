@@ -41,6 +41,7 @@ var app = config.AppConfig{
 	OmisePublicKey:  os.Getenv("OMISE_PKEY"),
 	OmisePrivateKey: os.Getenv("OMISE_SKEY"),
 	SellMargin:      0.3, // 30%
+	BTCDecimals:     8,   //BTC has 8 digits after coma
 }
 
 func run() error {
