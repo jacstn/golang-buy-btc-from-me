@@ -8,7 +8,7 @@ import (
 
 type Order struct {
 	Id                      uint16
-	BTCAmount               uint64
+	SatoshiAmount           uint64
 	USDAmount               uint64
 	Address                 string
 	BlockchainTransactionID string
@@ -18,8 +18,8 @@ type Order struct {
 }
 
 func NewOrder(db *sql.DB, o *Order) error {
-	_, err := db.Exec("INSERT into order (btcAmount, usdAmount, address, blockchainTransactionId, status, createdAt, updatedAt) values (?, ?, ?, ?, ?, 'NEW', ?, ?)",
-		o.BTCAmount, o.USDAmount, o.Address, o.BlockchainTransactionID, time.Now(), time.Now())
+	_, err := db.Exec("INSERT INTO `order` (satoshiAmount, usdAmount, address, blockchainTransactionId, status, createdAt, updatedAt) values (?, ?, ?, ?, 'NEW', ?, ?)",
+		o.SatoshiAmount, o.USDAmount, o.Address, o.BlockchainTransactionID, time.Now(), time.Now())
 
 	if err != nil {
 		fmt.Println("error while inserting into database", err)
@@ -39,7 +39,7 @@ func ListOrders(db *sql.DB) ([]Order, error) {
 	for res.Next() {
 
 		var o Order
-		err := res.Scan(&o.Id, &o.BTCAmount, &o.USDAmount, &o.Address,
+		err := res.Scan(&o.Id, &o.SatoshiAmount, &o.USDAmount, &o.Address,
 			&o.BlockchainTransactionID, &o.Status, &o.CreatedAt, &o.UpdatedAt)
 
 		if err != nil {

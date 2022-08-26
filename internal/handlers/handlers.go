@@ -33,16 +33,16 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	if form.Valid() {
 		fmt.Println("form valid")
-		btcAmountFl, _ := strconv.ParseFloat(r.Form.Get("btc_amount"), 64)
-		btcAmount := uint64(btcAmountFl) * app.BTCDecimals
+		btcAmount, _ := strconv.ParseFloat(r.Form.Get("btc_amount"), 64)
+		satoshiAmount := uint64(btcAmount) * app.BTCDecimals
 		btcPrice, _ := strconv.ParseFloat(r.Form.Get("btc_price"), 64)
 
-		usdAmount := btcPrice * btcAmountFl * 100
+		usdAmount := btcPrice * btcAmount * 100
 
 		o := models.Order{
-			BTCAmount: btcAmount,
-			Address:   r.Form.Get("btc_addr"),
-			USDAmount: uint64(usdAmount),
+			SatoshiAmount: satoshiAmount,
+			Address:       r.Form.Get("btc_addr"),
+			USDAmount:     uint64(usdAmount),
 		}
 
 		err := models.NewOrder(app.DB, &o)
@@ -53,6 +53,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "{\"status\":\"ok\"}")
 		return
 	} else {
+		fmt.Println("form invalid")
 		formErrors, _ := json.Marshal(form.Errors)
 
 		fmt.Fprintf(w, "{\"status\":\"err\", \"errors\": %s}", string(formErrors))

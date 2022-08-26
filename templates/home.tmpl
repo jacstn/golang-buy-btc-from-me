@@ -8,18 +8,22 @@
     <div class="row mt-3">
       <div class="form-group">
         <div class="mt-3">
-          <input type="text" id="btc_addr" name="btc_addr" value="" class="form-control"  aria-describedby="btc_addr" placeholder="Enter Bitcoin Address">
+          <input type="text" id="btc_addr" name="btc_addr" class="form-control"  aria-describedby="btc_addr" placeholder="Enter Bitcoin Address">
         </div>
         <div id="addressHelp" class="form-text">Bitcoin Address we will send bought Bitcoin to.</div>
         <div class="mt-3">
-          <input type="text" id="btc_amount" name="btc_amount" value="" class="form-control" aria-describedby="amount" placeholder="Enter Amount">
+          <input type="text" id="btc_amount" name="btc_amount" class="form-control" aria-describedby="amount" placeholder="Enter Amount">
         </div>
-        <div id="btcprice-hint" class="form-text">Price Per 1 BTC</div>
+        <div id="btc_price_hint" class="form-text">Price for 1 BTC</div>
         <div class="mt-3">
           <input type="text" class="form-control" id="to-pay" name="to-pay" aria-describedby="to-pay" placeholder="To Pay" disabled>
         </div>
-        <div id="addressHelp" class="form-text">amount to pay in USD</div>
 
+        <div id="addressHelp" class="form-text">Amount to pay in USD</div>
+        <div style="margin-top:60px">
+          <input type="text" hidden id="btc_price" name="btc_price" class="form-control" aria-describedby="btc_price" placeholder="Price for 1 BTC">
+        </div>
+        
         <div class="mt-3">
 
         </div>
@@ -108,8 +112,8 @@
           console.log(done)
           BTCPRICE = parseFloat(done.btc_price) * (1 + done.sell_margin);
 
-          var str = "Price per 1 BTC = " + BTCPRICE;
-          $('#btcprice-hint').html(str);
+          $("#btc_price").val(BTCPRICE);
+          $('#btc_price_hint').html("Price for 1 BTC: " + BTCPRICE)
         }
     });
   });
