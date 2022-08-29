@@ -63,7 +63,11 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 func GetBTCPrice(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, "{\"btc_price\":%s, \"sell_margin\":%.2f}", ext.GetBTCPrice(), app.SellMargin)
+	btcPrice := ext.GetBTCPrice()
+	if btcPrice == "0" {
+		fmt.Fprint(w, "{\"err\":\"unable to get current bitcoin price\"")
+	}
+	fmt.Fprintf(w, "{\"btc_price\":%s, \"sell_margin\":%.2f}", btcPrice, app.SellMargin)
 }
 
 func UpdateOrderStatus(w http.ResponseWriter, r *http.Request) {

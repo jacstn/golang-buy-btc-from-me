@@ -1,9 +1,13 @@
 {{template "base" .}}
-
+<styles>
+  spinner-grow {
+    margin-left:20px
+  }
+</styles>
 {{define "content"}}
   <script type="text/javascript" src="https://cdn.omise.co/omise.js"></script>
 
-  <h3><img width="70px" src="/static/img/btc.png">Buy BTC From Me</h3>
+  <h3><img width="70px" src="/static/img/btc.png">Buy BTC From Me <div class="spinner-grow  spinner-grow-sm" id="spinner" role="status"></h3>
   <form method="post" id="buy-btc-form" action="/create-order">
     <div class="row mt-3">
       <div class="form-group">
@@ -33,7 +37,8 @@
     </div>
     <div class="row mt-3">
       <div class="col">
-        <input type="submit" value="Pay" id="pay-button" class="btn btn-primary"/>
+        <input type="submit" value="Pay" disabled id="pay-button" class="btn btn-primary"/>      
+        </div>
       </div>
     </div>
   </form>
@@ -65,6 +70,11 @@
         })
     };
     // ---------------------------------------------------
+    function toggleSpinner(on){
+      if (on) {
+
+      }
+    }
     $("#buy-btc-form").submit(function(e) {
           $("#pay-button").attr("disabled", true);
           e.preventDefault();
@@ -109,11 +119,18 @@
     $.ajax({ url: "/get-btc-price",
         context: document.body,
         success: function(done){
-          console.log(done)
-          BTCPRICE = parseFloat(done.btc_price) * (1 + done.sell_margin);
+          console.log("done", done)
+          if (done.btc_price){
+            BTCPRICE = parseFloat(done.btc_price) * (1 + done.sell_margin);
 
-          $("#btc_price").val(BTCPRICE);
-          $('#btc_price_hint').html("Price for 1 BTC: " + BTCPRICE)
+            $("#btc_price").val(BTCPRICE);
+            $('#btc_price_hint').html("Price for 1 BTC: " + BTCPRICE)
+            $("#pay-button").attr("disabled", false);
+          } else
+            if (!done.err) {
+              $("#pay-button").attr("disabled", true);
+          }
+          $('#spinner').hide()
         }
     });
   });
