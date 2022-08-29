@@ -13,6 +13,16 @@ import (
 	"github.com/jacstn/golang-buy-btc-from-me/internal/handlers"
 )
 
+const portNumber = ":3000"
+
+var app = config.AppConfig{
+	Production:      false,
+	OmisePublicKey:  os.Getenv("OMISE_PKEY"),
+	OmisePrivateKey: os.Getenv("OMISE_SKEY"),
+	SellMargin:      0.3,    // 30%
+	BTCDecimals:     8 * 10, //BTC has 8 digits after coma
+}
+
 func main() {
 	err := run()
 	if err != nil {
@@ -32,16 +42,6 @@ func main() {
 	if err != nil {
 		log.Fatal("Cannot start server")
 	}
-}
-
-const portNumber = ":3000"
-
-var app = config.AppConfig{
-	Production:      false,
-	OmisePublicKey:  os.Getenv("OMISE_PKEY"),
-	OmisePrivateKey: os.Getenv("OMISE_SKEY"),
-	SellMargin:      0.3,    // 30%
-	BTCDecimals:     8 * 10, //BTC has 8 digits after coma
 }
 
 func run() error {
