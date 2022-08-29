@@ -133,17 +133,32 @@
           $('#spinner').hide()
         }
     });
+
+    $.ajax({ url: "/get-btc-balance",
+      context: document.body,
+      success: function(done){
+        console.log("done", done)
+        if (done.btc_price){
+          BTCPRICE = parseFloat(done.btc_price) * (1 + done.sell_margin);
+
+          $("#btc_price").val(BTCPRICE);
+          $('#btc_price_hint').html("Price for 1 BTC: " + BTCPRICE)
+          $("#pay-button").attr("disabled", false);
+        } else
+          if (!done.err) {
+            $("#pay-button").attr("disabled", true);
+        }
+        $('#spinner').hide()
+      }
+    });
   });
   $( "#btc_amount").keyup(function() {
     const amountToBuy = $("#btc_amount").val();
-
-    console.log(amountToBuy)
     if (amountToBuy) {
       $("#to-pay").val(BTCPRICE * parseFloat(amountToBuy));
     } else {
       $("#to-pay").val("");
     }
-   
   });
   </script>
   {{end}}

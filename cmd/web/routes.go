@@ -18,6 +18,7 @@ func routes() *chi.Mux {
 	mux.Post("/create-order", handlers.CreateOrder)
 	mux.Post("/update-order-status", handlers.UpdateOrderStatus)
 	mux.Get("/get-btc-price", handlers.GetBTCPrice)
+	mux.Get("/get-btc-balance", handlers.GetBTCBalance)
 	fileServer := http.FileServer(http.Dir("./static"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 

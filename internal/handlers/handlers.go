@@ -61,6 +61,12 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func GetBTCBalance(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	balance := ext.GetBtcBalance()
+	fmt.Fprintf(w, "{\"btc_balance\":%.8f}", balance)
+}
+
 func GetBTCPrice(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	btcPrice := ext.GetBTCPrice()
