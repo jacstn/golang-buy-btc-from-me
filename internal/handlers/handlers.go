@@ -65,18 +65,12 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 }
 
-type PaymentConfirmation struct {
-	Amount  float32
-	OrderId uint
-	token   string
-}
-
-func ConfirmPayment(w http.ResponseWriter, r *http.Request) {
+func Charge(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	d := struct {
 		Amount     float32 `json:"amount"`
-		OrderId    uint64  `json:"orderId"`
+		OrderId    int64   `json:"orderId"`
 		OmiseToken string  `json:"omiseToken"`
 	}{}
 
@@ -92,13 +86,18 @@ func ConfirmPayment(w http.ResponseWriter, r *http.Request) {
 		log.Println("error unmarshaling json")
 	}
 
-	paid := ext.ConfirmOmisePayment(d.OmiseToken)
-	if paid {
-		fmt.Fprint(w, "{\"status\":\"paid\"}")
-	} else {
-		fmt.Fprint(w, "{\"status\":\"not paid\"}")
+	amount := int64(d.Amount * 100)
+	o := models.GetOrderById(app.DB, d.OrderId)
+	_, err = ext.CreateOmiseCharge(&d.OmiseToken, &amount, &app.OmisePublicKey, &app.OmisePrivateKey)
+
+	if err != nil {
+		fmt.Fprintf(w, "{\"status\":\"err\", \"err\": \"%s\"}", err)
+		return
 	}
 
+	o.Status = "PAYM_COMPL"
+	o.Save(app.DB)
+	fmt.Fprint(w, "{\"status\":\"ok\"}")
 }
 
 func GetBTCBalance(w http.ResponseWriter, r *http.Request) {
@@ -114,10 +113,6 @@ func GetBTCPrice(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "{\"err\":\"unable to get current bitcoin price\"")
 	}
 	fmt.Fprintf(w, "{\"btc_price\":%s, \"sell_margin\":%.2f}", btcPrice, app.SellMargin)
-}
-
-func UpdateOrderStatus(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "{\"status\":\"ok\"}")
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {

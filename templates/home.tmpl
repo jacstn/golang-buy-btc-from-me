@@ -65,7 +65,7 @@
           defaultPaymentMethod: "credit_card",
           onCreateTokenSuccess: (nonce) => {
             console.log("token created succesfully", nonce)
-            confirmPayment(nonce, omiseAmount, orderId)
+            makeCharge(nonce,orderId, omiseAmount)
             $("#pay-button").attr("disabled", false);
           },
           onFormClosed: () => {
@@ -134,14 +134,10 @@
     }
   });
   }
-  function confirmPayment(token, orderId, amountUsd){
-    token="tokn_test_5sz32efidc5arcr0yp0"
-    orderId=21
-    amountUsd=26248.74
-
+  function makeCharge(token, orderId, amountUsd){
     $.ajax({
       type: "POST",
-      url: "/confirm-payment",
+      url: "/charge",
       // The key needs to match your method's input parameter (case-sensitive).
       data: JSON.stringify({ amount: amountUsd, orderId: orderId, omiseToken: token }),
       contentType: "application/json; charset=utf-8",
@@ -154,7 +150,6 @@
 
   }
   $(document).ready(function(){
-    confirmPayment()
     $.ajax({ url: "/get-btc-price",
         context: document.body,
         success: function(done){

@@ -74,6 +74,7 @@ func GetBtcBalance() float64 {
 	}
 
 	balance, err := strconv.ParseFloat(strings.TrimSuffix(string(out), "\n"), 32)
+
 	if err != nil {
 		log.Println(err)
 		log.Println("unable to parse bitcoin balance")
