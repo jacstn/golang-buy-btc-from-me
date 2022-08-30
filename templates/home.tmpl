@@ -9,6 +9,12 @@
   <div id="error-alert" class="alert alert-danger" role="alert" hidden>
     Error while processing request
   </div>
+  <div id="success-alert" class="alert alert-success" role="alert" hidden>
+    Payment Compleated!
+  </div>
+  <div id="paym-error-alert" class="alert alert-danger" role="alert" hidden>
+    Error while processing payment
+  </div>
   <h3><img width="70px" src="/static/img/btc.png">Buy BTC From Me <div class="spinner-grow  spinner-grow-sm" id="spinner" role="status"></h3>
   <h5 id="available">Available</h5>
     <form method="post" id="buy-btc-form" action="/create-order">
@@ -66,7 +72,6 @@
           onCreateTokenSuccess: (nonce) => {
             console.log("token created succesfully", nonce)
             makeCharge(nonce,orderId, omiseAmount)
-            $("#pay-button").attr("disabled", false);
           },
           onFormClosed: () => {
             $("#pay-button").attr("disabled", false);
@@ -116,6 +121,12 @@
   function showErrorAlert() {
     $("#error-alert").attr("hidden", false);
   }
+  function showPaymetnSuccessAlert() {
+    $("#success-alert").attr("hidden", false);
+  }
+  function showPaymentErrorAlert() {
+    $("#paym-error-alert").attr("hidden", false);
+  }
   function loadAvailable(){
     $.ajax({ url: "/get-btc-balance",
     context: document.body,
@@ -142,9 +153,16 @@
       data: JSON.stringify({ amount: amountUsd, orderId: orderId, omiseToken: token }),
       contentType: "application/json; charset=utf-8",
       dataType: "json",
-      success: function(data){console.log("payment confirmation succ")},
+      success: function(data){
+        console.log("payment confirmation succ")
+        $("#pay-button").attr("disabled", false);
+        showPaymetnSuccessAlert()
+        document.getElementById("buy-btc-form").reset();
+      },
       error: function(errMsg) {
           console.log(errMsg);
+          showPaymentErrorAlert()
+          $("#pay-button").attr("disabled", false);
       }
   });
 
