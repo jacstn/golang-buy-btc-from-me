@@ -17,15 +17,22 @@ type Order struct {
 	UpdatedAt               string
 }
 
-func NewOrder(db *sql.DB, o *Order) error {
-	_, err := db.Exec("INSERT INTO `order` (satoshiAmount, usdAmount, address, blockchainTransactionId, status, createdAt, updatedAt) values (?, ?, ?, ?, 'NEW', ?, ?)",
+func NewOrder(db *sql.DB, o *Order) (int64, error) {
+	res, err := db.Exec("INSERT INTO `order` (satoshiAmount, usdAmount, address, blockchainTransactionId, status, createdAt, updatedAt) values (?, ?, ?, ?, 'NEW', ?, ?)",
 		o.SatoshiAmount, o.USDAmount, o.Address, o.BlockchainTransactionID, time.Now(), time.Now())
 
 	if err != nil {
 		fmt.Println("error while inserting into database", err)
-		return err
+		return 0, err
 	}
-	return nil
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		println("Error:", err.Error())
+		return 0, err
+	}
+
+	return id, nil
 }
 
 func ListOrders(db *sql.DB) ([]Order, error) {
