@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -35,6 +37,7 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("form valid")
 		btcAmount, _ := strconv.ParseFloat(r.Form.Get("btc_amount"), 64)
 		satoshiAmount := uint64(btcAmount) * app.BTCDecimals
+
 		btcPrice, _ := strconv.ParseFloat(r.Form.Get("btc_price"), 64)
 
 		usdAmount := btcPrice * btcAmount * 100
@@ -58,6 +61,42 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 		formErrors, _ := json.Marshal(form.Errors)
 
 		fmt.Fprintf(w, "{\"status\":\"err\", \"errors\": %s}", string(formErrors))
+	}
+
+}
+
+type PaymentConfirmation struct {
+	Amount  float32
+	OrderId uint
+	token   string
+}
+
+func ConfirmPayment(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	d := struct {
+		Amount     float32 `json:"amount"`
+		OrderId    uint64  `json:"orderId"`
+		OmiseToken string  `json:"omiseToken"`
+	}{}
+
+	body, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		log.Println("error while read all io util")
+	}
+
+	err = json.Unmarshal(body, &d)
+	if err != nil {
+		fmt.Println(err)
+		log.Println("error unmarshaling json")
+	}
+
+	paid := ext.ConfirmOmisePayment(d.OmiseToken)
+	if paid {
+		fmt.Fprint(w, "{\"status\":\"paid\"}")
+	} else {
+		fmt.Fprint(w, "{\"status\":\"not paid\"}")
 	}
 
 }

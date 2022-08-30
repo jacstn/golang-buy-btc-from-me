@@ -27,6 +27,7 @@ func NoSurf(next http.Handler) http.Handler {
 		Secure:   app.Production,
 		SameSite: http.SameSiteLaxMode,
 	})
+	csrfHandler.ExemptPath("/confirm-payment")
 
 	return csrfHandler
 }

@@ -45,7 +45,7 @@ func IsValidBTCAddress(address string) bool {
 }
 
 func UnlockWallet() bool {
-	cmd := exec.Command(getBitcoinCliPath(), "walletpassphrase")
+	cmd := exec.Command(getBitcoinCliPath(), "unlockwallet", getWalletPassword())
 	out, err := cmd.CombinedOutput()
 
 	if err != nil {
