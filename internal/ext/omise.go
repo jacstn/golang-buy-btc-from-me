@@ -12,11 +12,11 @@ func CreateOmiseCharge(omiseToken *string, amount *int64, pKey *string, sKey *st
 	client, e := omise.NewClient(*pKey, *sKey)
 
 	if e != nil {
-		log.Fatal(e)
+		log.Println(e)
 		return "", errors.New("cannot create omise client object")
 	}
 	charge, createCharge := &omise.Charge{}, &operations.CreateCharge{
-		Amount:   *amount, // ฿ 1,000.00
+		Amount:   *amount,
 		Currency: "usd",
 		Card:     *omiseToken,
 	}
@@ -24,7 +24,7 @@ func CreateOmiseCharge(omiseToken *string, amount *int64, pKey *string, sKey *st
 	log.Println(charge, createCharge)
 
 	if e = client.Do(charge, createCharge); e != nil {
-		log.Fatal(e)
+		log.Println(e)
 		return "", errors.New("cannot create charge")
 	}
 
