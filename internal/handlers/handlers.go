@@ -45,12 +45,13 @@ func CreateOrder(w http.ResponseWriter, r *http.Request) {
 			USDAmount:     uint64(usdAmount),
 		}
 
-		err := models.NewOrder(app.DB, &o)
+		id, err := models.NewOrder(app.DB, &o)
+		fmt.Println(o)
 		if err != nil {
 			fmt.Fprint(w, "{\"status\":\"err\", \"error while saving model\"}")
 			return
 		}
-		fmt.Fprint(w, "{\"status\":\"ok\"}")
+		fmt.Fprintf(w, "{\"status\":\"ok\", \"order_id\":%d}", id)
 		return
 	} else {
 		fmt.Println("form invalid")
