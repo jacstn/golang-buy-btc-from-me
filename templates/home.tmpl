@@ -6,9 +6,12 @@
 </styles>
 {{define "content"}}
   <script type="text/javascript" src="https://cdn.omise.co/omise.js"></script>
-
+  <div id="error-alert" class="alert alert-danger" role="alert" hidden>
+    Error while processing request
+  </div>
   <h3><img width="70px" src="/static/img/btc.png">Buy BTC From Me <div class="spinner-grow  spinner-grow-sm" id="spinner" role="status"></h3>
-  <form method="post" id="buy-btc-form" action="/create-order">
+  <h5 id="available">Available</h5>
+    <form method="post" id="buy-btc-form" action="/create-order">
     <div class="row mt-3">
       <div class="form-group">
         <div class="mt-3">
@@ -35,9 +38,9 @@
 
       </div>
     </div>
-    <div class="row mt-3">
+    <div class="row">
       <div class="col">
-        <input type="submit" value="Pay" disabled id="pay-button" class="btn btn-primary"/>      
+        <input type="submit" value="Buy" disabled id="pay-button" class="btn btn-primary"/>      
         </div>
       </div>
     </div>
@@ -46,7 +49,7 @@
   <script type="text/javascript">
     var BTCPRICE = undefined;
 
-    function omisePaymentForm(omiseAmount) {
+    function omisePaymentForm(omiseAmount, orderId) {
         const { OmiseCard } = window
         
         omiseAmount = parseFloat(omiseAmount) * 100
@@ -62,6 +65,7 @@
           defaultPaymentMethod: "credit_card",
           onCreateTokenSuccess: (nonce) => {
             console.log("token created succesfully", nonce)
+            confirmPayment(nonce, omiseAmount, orderId)
             $("#pay-button").attr("disabled", false);
           },
           onFormClosed: () => {
@@ -70,11 +74,6 @@
         })
     };
     // ---------------------------------------------------
-    function toggleSpinner(on){
-      if (on) {
-
-      }
-    }
     $("#buy-btc-form").submit(function(e) {
           $("#pay-button").attr("disabled", true);
           e.preventDefault();
@@ -90,7 +89,7 @@
               data: form.serialize(), // serializes the form's elements.
               success: function(data)
               {
-                console.log(data.errors)
+                console.log("order create response", data)
                 if (data.status=='err'){
                   if (data.errors.btc_addr) {
                     console.log("validation error")
@@ -108,13 +107,39 @@
 
                   $("#pay-button").attr("disabled", false);
                 }else {
-                  omisePaymentForm(omiseAmount)
+                  omisePaymentForm(omiseAmount, data.order_id)
                 }
                 
               }
-          });
-      });
+            }); //ajax request
+      }); //submit
+  function showErrorAlert() {
+    $("#error-alert").attr("hidden", false);
+  }
+  function loadAvailable(){
+    $.ajax({ url: "/get-btc-balance",
+    context: document.body,
+    success: function(done){
+      console.log("load available done", done)
+      if (done.btc_balance){
+        $('#available').html("Available: " + done.btc_balance + " BTC")
+        $("#pay-button").attr("disabled", false);
+      } else {
+        showErrorAlert()
+        if (!done.err) {
+            $("#pay-button").attr("disabled", true);
+        }
+      }
+      $('#spinner').hide()
+    }
+  });
+  }
+  function confirmPayment(token, orderId, amountUsd){
+    token="tokn_test_5sz2x3wvpj1icntc31k"
+    orderId=17
+    amountUsd=26206.856
 
+  }
   $(document).ready(function(){
     $.ajax({ url: "/get-btc-price",
         context: document.body,
@@ -125,37 +150,23 @@
 
             $("#btc_price").val(BTCPRICE);
             $('#btc_price_hint').html("Price for 1 BTC: " + BTCPRICE)
-            $("#pay-button").attr("disabled", false);
-          } else
+            loadAvailable()
+          } else {
+            showErrorAlert()
             if (!done.err) {
               $("#pay-button").attr("disabled", true);
           }
+        }
           $('#spinner').hide()
         }
     });
 
-    $.ajax({ url: "/get-btc-balance",
-      context: document.body,
-      success: function(done){
-        console.log("done", done)
-        if (done.btc_price){
-          BTCPRICE = parseFloat(done.btc_price) * (1 + done.sell_margin);
 
-          $("#btc_price").val(BTCPRICE);
-          $('#btc_price_hint').html("Price for 1 BTC: " + BTCPRICE)
-          $("#pay-button").attr("disabled", false);
-        } else
-          if (!done.err) {
-            $("#pay-button").attr("disabled", true);
-        }
-        $('#spinner').hide()
-      }
-    });
   });
   $( "#btc_amount").keyup(function() {
     const amountToBuy = $("#btc_amount").val();
     if (amountToBuy) {
-      $("#to-pay").val(BTCPRICE * parseFloat(amountToBuy));
+      $("#to-pay").val((BTCPRICE * parseFloat(amountToBuy)).toFixed(2));
     } else {
       $("#to-pay").val("");
     }
