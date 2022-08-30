@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"time"
@@ -19,8 +20,8 @@ var app = config.AppConfig{
 	Production:      false,
 	OmisePublicKey:  os.Getenv("OMISE_PKEY"),
 	OmisePrivateKey: os.Getenv("OMISE_SKEY"),
-	SellMargin:      0.3,    // 30%
-	BTCDecimals:     8 * 10, //BTC has 8 digits after coma
+	SellMargin:      0.3,                     // 30%
+	BTCDecimals:     uint64(math.Pow(10, 6)), //BTC has 8 digits after coma
 }
 
 func main() {
