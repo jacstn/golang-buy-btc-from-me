@@ -22,4 +22,6 @@ Application uses set of environment variables that must be defined before runnin
   - Run `go get -d ./...` to download all dependencies
   - Start application by executing `go run cmd/web/main.go cmd/web/middleware.go cmd/web/routes.go`
 
-
+### TODO
+ - Write `Docker` scripts to install and run application
+ - Cover Application with more unit tests
